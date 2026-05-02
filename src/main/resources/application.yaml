@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: movieflex
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/movieflex
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:password}
+    driver-class-name: org.postgresql.Driver
