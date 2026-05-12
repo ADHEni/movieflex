@@ -7,13 +7,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
-@Table(name = "Actor")
+@Table(name = "actors")
 @Entity
 public class Actor {
 
     @Id
     @Column(name = "actor_id")
-    private int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(name = "first_name")
     private String firstName;

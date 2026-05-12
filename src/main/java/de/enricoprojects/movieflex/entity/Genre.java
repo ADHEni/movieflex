@@ -10,13 +10,14 @@ import java.util.Set;
 
 
 @Data
-@Table(name = "Genre")
+@Table(name = "genres")
 @Entity
 public class Genre {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "genre_id")
-    private int id;
+    private Long id;
 
     @Column(name = "name")
     private String name;

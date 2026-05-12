@@ -1,9 +1,6 @@
 package de.enricoprojects.movieflex.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,15 +10,16 @@ import org.jspecify.annotations.Nullable;
 import java.sql.Timestamp;
 
 @Data
-@Table(name = "User")
+@Table(name = "users")
 @Entity
 @NoArgsConstructor(access = AccessLevel.PUBLIC,force = true)
 @AllArgsConstructor
 public class User {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
-    private int userId;
+    private Long userId;
 
     @Column(name = "username")
     private String username;

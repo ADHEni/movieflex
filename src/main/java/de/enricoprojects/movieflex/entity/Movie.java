@@ -8,12 +8,13 @@ import java.util.Set;
 
 @Entity
 @Data
-@Table(name = "Movie")
+@Table(name = "movies")
 public class Movie {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "movie_id")
-    private int movie_id;
+    private Long movie_id;
 
     @Column(name = "title")
     private String title;
