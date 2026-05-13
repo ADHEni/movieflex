@@ -8,10 +8,14 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -33,6 +37,18 @@ public class MoviesApiIntegrationTest {
                 .andExpect(jsonPath("$[0].releaseYear").value("1999"))
                 .andExpect(jsonPath("$[1].title").value("Inception"))
                 .andExpect(jsonPath("$[2].title").value("Parasite"));
+    }
+
+    @Test
+    @WithMockUser
+    void shouldReturnMovieByName() throws Exception {
+
+        mockMvc.perform(get("/api/movies/{movieName}","Parasite"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("Parasite"));
+
+
     }
 
 

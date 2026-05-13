@@ -1,15 +1,13 @@
 package de.enricoprojects.movieflex.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.jspecify.annotations.Nullable;
 
 import java.sql.Timestamp;
 
-@Data
+@Getter
+@Setter
 @Table(name = "users")
 @Entity
 @NoArgsConstructor(access = AccessLevel.PUBLIC,force = true)

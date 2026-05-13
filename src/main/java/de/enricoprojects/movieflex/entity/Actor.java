@@ -2,13 +2,19 @@ package de.enricoprojects.movieflex.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
+
 @Table(name = "actors")
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class Actor {
 
     @Id

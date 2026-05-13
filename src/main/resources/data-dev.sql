@@ -1,3 +1,4 @@
+
 INSERT INTO genres (genre_id, name) VALUES
 (1, 'Sci-Fi'),
 (2, 'Drama'),

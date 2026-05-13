@@ -31,7 +31,7 @@ public class MovieSummaryDTO {
 
                 movie.getTitle(),
                 movie.getImage_url(),
-                movie.getRelease_year()
+                movie.getReleaseYear()
 
         );
 
