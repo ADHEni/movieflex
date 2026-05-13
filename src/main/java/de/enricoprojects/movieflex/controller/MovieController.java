@@ -20,6 +20,10 @@ public class MovieController {
 
     MovieRepository movieRepository;
 
+    public MovieController(MovieRepository movieRepository) {
+        this.movieRepository = movieRepository;
+    }
+
     @GetMapping("/movies")
     public ResponseEntity<List<MovieSummaryDTO>> movies()  {
         try {
