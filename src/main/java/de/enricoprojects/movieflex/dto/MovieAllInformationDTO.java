@@ -1,12 +1,9 @@
 package de.enricoprojects.movieflex.dto;
 
-
-import de.enricoprojects.movieflex.entity.Actor;
 import de.enricoprojects.movieflex.entity.Genre;
 import de.enricoprojects.movieflex.entity.Movie;
 import lombok.Data;
 
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -20,8 +17,9 @@ public class MovieAllInformationDTO {
 
     private String releaseYear;
 
-    private String duration;
+    private String description;
 
+    private int duration;
 
     private float rating;
 
@@ -29,10 +27,11 @@ public class MovieAllInformationDTO {
 
     private Set<String> genreList;
 
-    public MovieAllInformationDTO(String title, String image_url, String releaseYear, String duration, float rating, Set<String> actorList, Set<String> genreList) {
+    public MovieAllInformationDTO(String title, String image_url, String releaseYear,String description, int duration, float rating, Set<String> actorList, Set<String> genreList) {
         this.title = title;
         this.image_url = image_url;
         this.releaseYear = releaseYear;
+        this.description = description;
         this.duration = duration;
         this.rating = rating;
         this.actorList = actorList;
@@ -47,6 +46,7 @@ public class MovieAllInformationDTO {
                 movie.getImage_url(),
                 movie.getReleaseYear(),
                 movie.getDescription(),
+                movie.getDuration(),
                 movie.getRating(),
                 movie.getActors()
                         .stream()

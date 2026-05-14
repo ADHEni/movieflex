@@ -1,11 +1,7 @@
 package de.enricoprojects.movieflex.dto;
-
-import de.enricoprojects.movieflex.entity.Actor;
-import de.enricoprojects.movieflex.entity.Genre;
 import de.enricoprojects.movieflex.entity.Movie;
 import lombok.Data;
 
-import java.util.List;
 
 @Data
 public class MovieSummaryDTO {

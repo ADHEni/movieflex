@@ -2,7 +2,6 @@ package de.enricoprojects.movieflex.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.jspecify.annotations.Nullable;
 
 import java.sql.Timestamp;
 

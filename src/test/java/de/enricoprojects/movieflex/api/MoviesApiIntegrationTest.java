@@ -1,7 +1,6 @@
 package de.enricoprojects.movieflex.api;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
@@ -9,13 +8,12 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -47,6 +45,31 @@ public class MoviesApiIntegrationTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("Parasite"));
+
+
+    }
+
+    @Test
+    @WithMockUser
+    void shouldReturnMoviesByTitleSearch() throws Exception {
+
+        mockMvc.perform(get("/api/movies/search?title=Para"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].title").value("Parasite"));
+
+
+    }
+
+    @Test
+    @WithMockUser
+    void shouldReturnMoviesByGenreSearch() throws Exception {
+
+        mockMvc.perform(get("/api/movies/search?genre=sci-fi"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].title").value("The Matrix"))
+                .andExpect(jsonPath("$[1].title").value("Inception"));
 
 
     }

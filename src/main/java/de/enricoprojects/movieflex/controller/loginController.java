@@ -3,7 +3,6 @@ package de.enricoprojects.movieflex.controller;
 import de.enricoprojects.movieflex.entity.User;
 import de.enricoprojects.movieflex.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @RestController()

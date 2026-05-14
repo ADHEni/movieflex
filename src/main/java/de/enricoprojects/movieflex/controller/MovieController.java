@@ -5,49 +5,49 @@ import de.enricoprojects.movieflex.dto.MovieSummaryDTO;
 import de.enricoprojects.movieflex.entity.Movie;
 import de.enricoprojects.movieflex.exception.BadDbRequestForMovies;
 import de.enricoprojects.movieflex.repository.MovieRepository;
+import de.enricoprojects.movieflex.service.MovieService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/api")
 public class MovieController {
 
+    MovieService movieService;
 
-    MovieRepository movieRepository;
 
-    public MovieController(MovieRepository movieRepository) {
-        this.movieRepository = movieRepository;
+    public MovieController(MovieService movieService) {
+
+        this.movieService = movieService;
+
+
     }
 
     @GetMapping("/movies")
-    public ResponseEntity<List<MovieSummaryDTO>> movies()  {
-        try {
-            List<Movie> allMovies = movieRepository.findAll();
-            List<MovieSummaryDTO> movieSummaryDTOS = allMovies
-                    .stream()
-                    .map(MovieSummaryDTO::from)
-                    .toList();
-
-            return ResponseEntity.ok(movieSummaryDTOS);
-        } catch (BadDbRequestForMovies e) {
-
-            return ResponseEntity.badRequest().build();
-
-        }
+    public ResponseEntity<List<MovieSummaryDTO>> movies() throws Exception {
+        return ResponseEntity.ok(movieService.findAllMovies());
     }
 
     @GetMapping("/movies/{movieName}")
-    public ResponseEntity<MovieAllInformationDTO> movieByName(@PathVariable String movieName) {
+    public ResponseEntity<MovieAllInformationDTO> movieByName(@PathVariable String movieName) throws Exception {
 
-        return movieRepository.findByTitle(movieName)
-                .map(MovieAllInformationDTO::fromMovie)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(movieService.getMovieByName(movieName));
     }
+
+    @GetMapping("/movies/search")
+    public ResponseEntity<List<MovieSummaryDTO>> searchMovies(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String genre) {
+
+
+        return ResponseEntity.ok(movieService.searchMovies(title, genre));
+        //TODO extend more filter parameters
+
+    }
+
+
 
 }
