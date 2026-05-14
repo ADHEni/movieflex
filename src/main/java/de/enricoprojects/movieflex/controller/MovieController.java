@@ -2,9 +2,6 @@ package de.enricoprojects.movieflex.controller;
 
 import de.enricoprojects.movieflex.dto.MovieAllInformationDTO;
 import de.enricoprojects.movieflex.dto.MovieSummaryDTO;
-import de.enricoprojects.movieflex.entity.Movie;
-import de.enricoprojects.movieflex.exception.BadDbRequestForMovies;
-import de.enricoprojects.movieflex.repository.MovieRepository;
 import de.enricoprojects.movieflex.service.MovieService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

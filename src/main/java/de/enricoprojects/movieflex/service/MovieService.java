@@ -2,6 +2,7 @@ package de.enricoprojects.movieflex.service;
 
 import de.enricoprojects.movieflex.dto.MovieAllInformationDTO;
 import de.enricoprojects.movieflex.dto.MovieSummaryDTO;
+import de.enricoprojects.movieflex.exception.MovieNotFoundException;
 import de.enricoprojects.movieflex.repository.MovieRepository;
 import org.springframework.stereotype.Service;
 
@@ -28,11 +29,11 @@ public class MovieService {
 
     }
 
-    public MovieAllInformationDTO getMovieByName(String title) throws Exception{
+    public MovieAllInformationDTO getMovieByName(String title) {
 
         return movieRepository.findByTitle(title)
                 .map(MovieAllInformationDTO::fromMovie)
-                .orElse(null);
+                .orElseThrow(() -> new MovieNotFoundException(title));
 
 
     }
