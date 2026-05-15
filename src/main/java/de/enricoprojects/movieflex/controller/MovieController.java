@@ -2,6 +2,7 @@ package de.enricoprojects.movieflex.controller;
 
 import de.enricoprojects.movieflex.dto.MovieAllInformationDTO;
 import de.enricoprojects.movieflex.dto.MovieSummaryDTO;
+import de.enricoprojects.movieflex.exception.MovieNotFoundException;
 import de.enricoprojects.movieflex.service.MovieService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +30,7 @@ public class MovieController {
     }
 
     @GetMapping("/movies/{movieName}")
-    public ResponseEntity<MovieAllInformationDTO> movieByName(@PathVariable String movieName) throws Exception {
+    public ResponseEntity<MovieAllInformationDTO> movieByName(@PathVariable String movieName) throws MovieNotFoundException {
 
         return ResponseEntity.ok(movieService.getMovieByName(movieName));
     }

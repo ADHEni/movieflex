@@ -3,8 +3,11 @@ package de.enricoprojects.movieflex.security;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -33,14 +36,28 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/h2-console/**").hasRole("ADMIN")
-                .anyRequest().authenticated()
-        );
-        http.headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
-        http.csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**"));
-        http.formLogin(Customizer.withDefaults());
-        return http.build();
+       return http
+               .cors(cors -> cors.disable())
+               .csrf(csrf -> csrf.disable())
+               .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+               .authorizeHttpRequests(auth -> auth
+                        //DataBase
+                        .requestMatchers("/h2-console/**").hasRole("ADMIN")
+                        //Public Movie GET endpoints
+                        .requestMatchers(HttpMethod.GET,"/api/movies").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/movies/**").permitAll()
+                        //Public Movie Auth endpoints
+                        .requestMatchers(HttpMethod.POST,"/api/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/auth/register").permitAll()
+
+                        .requestMatchers(HttpMethod.OPTIONS,"/**").permitAll()
+
+                        //Everything else needs authentification
+                        .anyRequest().authenticated()
+               ).headers(headers -> headers
+                       .frameOptions(frame -> frame.sameOrigin())
+               ).httpBasic(Customizer.withDefaults()).build();
+
     }
 
 

@@ -10,6 +10,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -24,7 +25,6 @@ public class MoviesApiIntegrationTest {
     private MockMvc mockMvc;
 
     @Test
-    @WithMockUser
     void shouldReturnMovies() throws Exception {
         mockMvc.perform(get("/api/movies"))
                 .andExpect(status().isOk())
@@ -38,7 +38,6 @@ public class MoviesApiIntegrationTest {
     }
 
     @Test
-    @WithMockUser
     void shouldReturnMovieByName() throws Exception {
 
         mockMvc.perform(get("/api/movies/{movieName}","Parasite"))
@@ -50,7 +49,6 @@ public class MoviesApiIntegrationTest {
     }
 
     @Test
-    @WithMockUser
     void shouldReturnMoviesByTitleSearch() throws Exception {
 
         mockMvc.perform(get("/api/movies/search?title=Para"))
@@ -62,7 +60,6 @@ public class MoviesApiIntegrationTest {
     }
 
     @Test
-    @WithMockUser
     void shouldReturnMoviesByGenreSearch() throws Exception {
 
         mockMvc.perform(get("/api/movies/search?genre=sci-fi"))
@@ -74,6 +71,35 @@ public class MoviesApiIntegrationTest {
 
     }
 
+    @Test
+    void shouldNotAllowProtectedEndpointWithoutLogin() throws Exception {
+        mockMvc.perform(post("/api/movies"))
+                .andExpect(status().isUnauthorized());
+    }
 
+    @Test
+    void searchForNonExistingMoviesShouldReturn404() throws Exception {
+
+        mockMvc.perform(get("/api/movies/Star Wars"))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value("MOVIE_NOT_FOUND"))
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.message").value("Movie Star Wars not found"))
+                .andExpect(jsonPath("$.timestamp").exists());
+
+
+    }
+
+    @Test
+    void shouldReturnEmptyListWhenTitleSearchHasNoResults() throws Exception {
+
+        mockMvc.perform(get("/api/movies/search")
+                        .param("title", "Star Wars"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$").isEmpty());
+    }
 
 }

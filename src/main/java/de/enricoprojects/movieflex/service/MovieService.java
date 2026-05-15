@@ -29,7 +29,7 @@ public class MovieService {
 
     }
 
-    public MovieAllInformationDTO getMovieByName(String title) {
+    public MovieAllInformationDTO getMovieByName(String title) throws MovieNotFoundException {
 
         return movieRepository.findByTitle(title)
                 .map(MovieAllInformationDTO::fromMovie)

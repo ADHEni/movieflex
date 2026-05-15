@@ -1,0 +1,52 @@
+package de.enricoprojects.movieflex.controller;
+
+import de.enricoprojects.movieflex.dto.AuthResponseDTO;
+import de.enricoprojects.movieflex.dto.LoginRequestDTO;
+import de.enricoprojects.movieflex.dto.RegisterRequestDTO;
+import de.enricoprojects.movieflex.dto.UserSummaryDTO;
+import de.enricoprojects.movieflex.entity.User;
+import de.enricoprojects.movieflex.repository.UserRepository;
+import de.enricoprojects.movieflex.service.AuthService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
+
+import java.sql.Timestamp;
+import java.util.Date;
+
+@RestController()
+@RequestMapping("/auth")
+public class AuthController {
+
+
+    private final AuthService authService;
+
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<UserSummaryDTO> registerUser(@RequestBody RegisterRequestDTO registerRequestDTO) {
+
+        UserSummaryDTO createdUser = authService.registerUser(registerRequestDTO);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+    }
+
+
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponseDTO> login(@RequestBody LoginRequestDTO loginRequestDTO) {
+
+        UserSummaryDTO createdUser = authService.loginUser(loginRequestDTO);
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(new AuthResponseDTO("","",createdUser));
+
+        //TODO finish login
+
+    }
+
+
+
+}

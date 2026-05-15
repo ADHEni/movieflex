@@ -27,6 +27,57 @@ public class GlobalExceptionHandler {
 
     }
 
+    @ExceptionHandler(UsernameAlreadyExistsException.class)
+    public ResponseEntity<ApiErrorDTO> handleUsernameAlreadyExistsException(UsernameAlreadyExistsException ex) {
+
+        ApiErrorDTO error = new ApiErrorDTO(
+
+                409,
+                "USERNAME_ALREADY_EXISTS",
+                ex.getMessage(),
+                LocalDateTime.now()
+
+
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+
+
+    }
+
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<ApiErrorDTO> handleEmailAlreadyExistsException(EmailAlreadyExistsException ex) {
+
+        ApiErrorDTO error = new ApiErrorDTO(
+
+                409,
+                "EMAIL_ALREADY_EXISTS",
+                ex.getMessage(),
+                LocalDateTime.now()
+
+
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+
+
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ApiErrorDTO> handleInvalidCredentialsException(InvalidCredentialsException ex) {
+
+        ApiErrorDTO error = new ApiErrorDTO(
+
+                401,
+                "INVALID_CREDENTIALS",
+                ex.getMessage(),
+                LocalDateTime.now()
+
+
+        );
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+
+
+    }
+
 
 
 }
