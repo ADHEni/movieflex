@@ -1,5 +1,6 @@
 package de.enricoprojects.movieflex.service;
 
+import de.enricoprojects.movieflex.dto.AuthResponseDTO;
 import de.enricoprojects.movieflex.dto.LoginRequestDTO;
 import de.enricoprojects.movieflex.dto.RegisterRequestDTO;
 import de.enricoprojects.movieflex.dto.UserSummaryDTO;
@@ -17,16 +18,19 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final JWTService jWTService;
     private PasswordEncoder passwordEncoder;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JWTService jWTService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jWTService = jWTService;
     }
 
     public UserSummaryDTO registerUser(RegisterRequestDTO registerRequestDTO) throws UsernameAlreadyExistsException, EmailAlreadyExistsException {
@@ -63,7 +67,7 @@ public class AuthService {
     }
 
 
-    public UserSummaryDTO loginUser(LoginRequestDTO loginRequestDTO) {
+    public AuthResponseDTO loginUser(LoginRequestDTO loginRequestDTO) {
 
 
         Optional<User> user = userRepository.findByUsername(loginRequestDTO.usernamen());
@@ -82,9 +86,12 @@ public class AuthService {
 
         }
 
-        return UserSummaryDTO.from(user.get());
+        String accessToken = jWTService.createAccessToken(user.get());
+
+        return new AuthResponseDTO(accessToken,"Bearer",UserSummaryDTO.from(user.get()));
 
     }
+
 
 
 

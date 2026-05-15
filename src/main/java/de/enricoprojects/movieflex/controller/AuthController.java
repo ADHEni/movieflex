@@ -39,11 +39,9 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDTO> login(@RequestBody LoginRequestDTO loginRequestDTO) {
 
-        UserSummaryDTO createdUser = authService.loginUser(loginRequestDTO);
 
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(new AuthResponseDTO("","",createdUser));
+        return ResponseEntity.ok(authService.loginUser(loginRequestDTO));
 
-        //TODO finish login
 
     }
 
