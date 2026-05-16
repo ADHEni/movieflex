@@ -16,7 +16,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 @RestController()
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
 
 
@@ -32,7 +32,7 @@ public class AuthController {
 
         UserSummaryDTO createdUser = authService.registerUser(registerRequestDTO);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+        return ResponseEntity.status(HttpStatus.OK).body(createdUser);
     }
 
 

@@ -5,27 +5,28 @@ import de.enricoprojects.movieflex.dto.LoginRequestDTO;
 import de.enricoprojects.movieflex.dto.UserSummaryDTO;
 import de.enricoprojects.movieflex.entity.User;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
-import org.springframework.security.oauth2.jwt.JwsHeader;
-import org.springframework.security.oauth2.jwt.JwtClaimsSet;
-import org.springframework.security.oauth2.jwt.JwtEncoder;
-import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
+import org.springframework.security.oauth2.jwt.*;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Date;
 
 @Service
 public class JWTService {
 
 
     private final JwtEncoder jwtEncoder;
+    private final JwtDecoder jwtDecoder;
     private final long expirationMinutes;
 
-    public JWTService(JwtEncoder jwtEncoder,  @Value("${app.jwt.expiration-minutes}") long expirationMinutes) {
+    public JWTService(JwtEncoder jwtEncoder, JwtDecoder jwtDecoder, @Value("${app.jwt.expiration-minutes}") long expirationMinutes) {
 
 
         this.jwtEncoder = jwtEncoder;
+        this.jwtDecoder = jwtDecoder;
         this.expirationMinutes = expirationMinutes;
     }
 
@@ -53,6 +54,31 @@ public class JWTService {
 
     }
 
+    public String extractUsername(String token) {
+        Jwt jwt = jwtDecoder.decode(token);
+        return jwt.getSubject();
+
+    }
+
+
+    public boolean isTokenValid(String token, UserDetails user) {
+
+        String username = extractUsername(token);
+
+        return username.equals(user.getUsername()) && !isTokenExpired(token);
+
+    }
+
+    private boolean isTokenExpired(String token) {
+
+        Jwt jwt = jwtDecoder.decode(token);
+
+        Instant expirationDate = jwt.getExpiresAt();
+
+        return expirationDate == null || expirationDate.isBefore(Instant.now());
+
+
+    }
 
 
 }

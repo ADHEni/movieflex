@@ -9,27 +9,24 @@ import de.enricoprojects.movieflex.exception.EmailAlreadyExistsException;
 import de.enricoprojects.movieflex.exception.InvalidCredentialsException;
 import de.enricoprojects.movieflex.exception.UsernameAlreadyExistsException;
 import de.enricoprojects.movieflex.repository.UserRepository;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import de.enricoprojects.movieflex.security.SecurityConfig;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.Date;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class AuthService {
 
     private final UserRepository userRepository;
     private final JWTService jWTService;
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JWTService jWTService) {
+    public AuthService(UserRepository userRepository, SecurityConfig passwordEncoder, JWTService jWTService) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
+        this.passwordEncoder = passwordEncoder.passwordEncoder();
         this.jWTService = jWTService;
     }
 

@@ -40,3 +40,8 @@ spring:
       mode: always
       data-locations: classpath:data-dev.sql
 
+app:
+    jwt:
+        secret: Y291bnRyeWFybXljYXJyeXJvYWRleGFtaW5laGFwcGVuZWRzcGVlZGF2b2lkcmFwaWQ=
+        expiration-minutes: 60
+

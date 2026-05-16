@@ -15,9 +15,19 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 public class SecurityConfig {
+
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+
+    }
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -46,9 +56,10 @@ public class SecurityConfig {
                         //Public Movie GET endpoints
                         .requestMatchers(HttpMethod.GET,"/api/movies").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/movies/**").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/movies/**").hasRole("ADMIN")
                         //Public Movie Auth endpoints
                         .requestMatchers(HttpMethod.POST,"/api/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/auth/register").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/auth/register").permitAll()
 
                         .requestMatchers(HttpMethod.OPTIONS,"/**").permitAll()
 
@@ -56,7 +67,9 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                ).headers(headers -> headers
                        .frameOptions(frame -> frame.sameOrigin())
-               ).httpBasic(Customizer.withDefaults()).build();
+               ).httpBasic(Customizer.withDefaults())
+               .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+               .build();
 
     }
 
