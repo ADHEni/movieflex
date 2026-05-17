@@ -58,8 +58,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/api/movies/**").permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/movies/**").hasRole("ADMIN")
                         //Public Movie Auth endpoints
-                        .requestMatchers(HttpMethod.POST,"/api/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/api/auth/register").permitAll()
+                       .requestMatchers("/api/auth/login").permitAll()
+                       .requestMatchers("/api/auth/register").permitAll()
+                       .requestMatchers("/api/auth/refresh").permitAll()
+                       .requestMatchers("/api/auth/logout").permitAll()
 
                         .requestMatchers(HttpMethod.OPTIONS,"/**").permitAll()
 

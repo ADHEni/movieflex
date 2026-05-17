@@ -77,6 +77,19 @@ public class RefreshTokenService {
 
     }
 
+    public void revokeRefreshToken(String rawRefreshToken) {
+
+        String tokenHash = hashToken(rawRefreshToken);
+
+        refreshTokenRepository.findByTokenHashAndRevokedFalse(tokenHash).ifPresent(refreshToken -> {
+
+            refreshToken.setRevoked(true);
+            refreshTokenRepository.save(refreshToken);
+
+        });
+
+    }
+
     public String createRefreshToken(User user) {
         String rawToken = UUID.randomUUID().toString();
 
