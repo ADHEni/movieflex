@@ -70,7 +70,7 @@ public class AuthService {
     public AuthResponseDTO loginUser(LoginRequestDTO loginRequestDTO) {
 
 
-        Optional<User> user = userRepository.findByUsername(loginRequestDTO.usernamen());
+        Optional<User> user = userRepository.findByUsername(loginRequestDTO.username());
 
         if(user.isEmpty()) {
 

@@ -34,34 +34,28 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    public UserDetailsService userDetailsService(PasswordEncoder encoder) {
-        UserDetails user = User.builder()
-                .username("user")
-                .password(encoder.encode("secret"))
-                .roles("ADMIN")
-                .build();
-        return new InMemoryUserDetailsManager(user);
-    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
        return http
-               .cors(cors -> cors.disable())
-               .csrf(csrf -> csrf.disable())
+               .cors(AbstractHttpConfigurer::disable)
+               .csrf(AbstractHttpConfigurer::disable)
+               .httpBasic(AbstractHttpConfigurer::disable)
+               .formLogin(AbstractHttpConfigurer::disable)
                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/error").permitAll()
                         //DataBase
-                        .requestMatchers("/h2-console/**").hasRole("ADMIN")
+                        .requestMatchers("/h2-console/**").permitAll()
                         //Public Movie GET endpoints
                         .requestMatchers(HttpMethod.GET,"/api/movies").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/movies/**").permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/movies/**").hasRole("ADMIN")
                         //Public Movie Auth endpoints
-                       .requestMatchers("/api/auth/login").permitAll()
-                       .requestMatchers("/api/auth/register").permitAll()
-                       .requestMatchers("/api/auth/refresh").permitAll()
-                       .requestMatchers("/api/auth/logout").permitAll()
+                       .requestMatchers(HttpMethod.POST,"/api/auth/login").permitAll()
+                       .requestMatchers(HttpMethod.POST,"/api/auth/register").permitAll()
+                       .requestMatchers(HttpMethod.POST,"/api/auth/refresh").permitAll()
+                       .requestMatchers(HttpMethod.POST,"/api/auth/logout").permitAll()
 
                         .requestMatchers(HttpMethod.OPTIONS,"/**").permitAll()
 
@@ -69,7 +63,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                ).headers(headers -> headers
                        .frameOptions(frame -> frame.sameOrigin())
-               ).httpBasic(Customizer.withDefaults())
+               )
                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                .build();
 
