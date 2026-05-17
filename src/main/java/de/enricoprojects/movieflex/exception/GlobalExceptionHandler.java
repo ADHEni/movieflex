@@ -95,6 +95,22 @@ public class GlobalExceptionHandler {
 
     }
 
+    @ExceptionHandler(RateLimitExceededException.class)
+    public ResponseEntity<ApiErrorDTO> handleRateLimitExceededException(RateLimitExceededException ex) {
+
+        ApiErrorDTO error = new ApiErrorDTO(
+
+                HttpStatus.TOO_MANY_REQUESTS.value(),
+                "RATE_LIMIT_EXCEEDED",
+                ex.getMessage(),
+                LocalDateTime.now()
+
+        );
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(error);
+
+
+    }
+
 
 
 }
