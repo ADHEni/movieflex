@@ -10,7 +10,8 @@ spring:
 app:
     jwt:
         secret: ${JWT_SECRET_KEY:mysecretkey}
-        expiration-minutes: 60
+        expiration-minutes: 15
+        expiration-refresh-token-days: 10
 
 
 ---

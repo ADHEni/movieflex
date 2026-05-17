@@ -24,10 +24,13 @@ public class AuthService {
     private final JWTService jWTService;
     private final PasswordEncoder passwordEncoder;
 
-    public AuthService(UserRepository userRepository, SecurityConfig passwordEncoder, JWTService jWTService) {
+    private final RefreshTokenService refreshTokenService;
+
+    public AuthService(UserRepository userRepository, SecurityConfig passwordEncoder, JWTService jWTService, RefreshTokenService refreshTokenService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder.passwordEncoder();
         this.jWTService = jWTService;
+        this.refreshTokenService = refreshTokenService;
     }
 
     public UserSummaryDTO registerUser(RegisterRequestDTO registerRequestDTO) throws UsernameAlreadyExistsException, EmailAlreadyExistsException {
@@ -84,8 +87,9 @@ public class AuthService {
         }
 
         String accessToken = jWTService.createAccessToken(user.get());
+        String rawRefreshToken = refreshTokenService.createRefreshToken(user.get());
 
-        return new AuthResponseDTO(accessToken,"Bearer",UserSummaryDTO.from(user.get()));
+        return new AuthResponseDTO(accessToken,"Bearer",rawRefreshToken,UserSummaryDTO.from(user.get()));
 
     }
 

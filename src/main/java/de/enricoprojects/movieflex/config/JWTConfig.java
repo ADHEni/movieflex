@@ -15,6 +15,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.util.Base64;
+import java.util.UUID;
 
 @Configuration
 public class JWTConfig {
@@ -49,6 +50,11 @@ public class JWTConfig {
                 .build();
 
 
+    }
+
+    @Bean
+    public String generateRefreshToken() {
+        return UUID.randomUUID().toString();
     }
 
 

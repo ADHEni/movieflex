@@ -78,6 +78,23 @@ public class GlobalExceptionHandler {
 
     }
 
+    @ExceptionHandler(InvalidRefreshToken.class)
+    public ResponseEntity<ApiErrorDTO> handleInvalidRefreshToken(InvalidRefreshToken ex) {
+
+        ApiErrorDTO error = new ApiErrorDTO(
+
+                401,
+                "INVALID_REFRESH_TOKEN",
+                ex.getMessage(),
+                LocalDateTime.now()
+
+        );
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+
+
+    }
+
 
 
 }

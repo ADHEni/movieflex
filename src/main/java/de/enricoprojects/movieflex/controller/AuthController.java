@@ -1,12 +1,10 @@
 package de.enricoprojects.movieflex.controller;
 
-import de.enricoprojects.movieflex.dto.AuthResponseDTO;
-import de.enricoprojects.movieflex.dto.LoginRequestDTO;
-import de.enricoprojects.movieflex.dto.RegisterRequestDTO;
-import de.enricoprojects.movieflex.dto.UserSummaryDTO;
+import de.enricoprojects.movieflex.dto.*;
 import de.enricoprojects.movieflex.entity.User;
 import de.enricoprojects.movieflex.repository.UserRepository;
 import de.enricoprojects.movieflex.service.AuthService;
+import de.enricoprojects.movieflex.service.RefreshTokenService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,9 +19,12 @@ public class AuthController {
 
 
     private final AuthService authService;
+    private final RefreshTokenService refreshTokenService;
 
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService, RefreshTokenService refreshTokenService) {
+
         this.authService = authService;
+        this.refreshTokenService = refreshTokenService;
 
     }
 
@@ -41,6 +42,14 @@ public class AuthController {
 
 
         return ResponseEntity.ok(authService.loginUser(loginRequestDTO));
+
+
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthResponseDTO> refresh(@RequestBody RefreshTokenRequestDTO refreshTokenRequestDTO) {
+
+            return ResponseEntity.ok(refreshTokenService.refresh(refreshTokenRequestDTO.getRefreshToken()));
 
 
     }
