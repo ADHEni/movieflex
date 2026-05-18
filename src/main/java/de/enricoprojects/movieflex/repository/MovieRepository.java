@@ -1,5 +1,6 @@
 package de.enricoprojects.movieflex.repository;
 
+import de.enricoprojects.movieflex.entity.Actor;
 import de.enricoprojects.movieflex.entity.Genre;
 import de.enricoprojects.movieflex.entity.Movie;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,6 +16,7 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
     Optional<Movie> findByTitle(String title);
 
     List<Movie> findByGenres(Set<Genre> genres);
+
 
 
     @Query("""

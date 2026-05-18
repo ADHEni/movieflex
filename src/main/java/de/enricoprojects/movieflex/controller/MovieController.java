@@ -1,6 +1,7 @@
 package de.enricoprojects.movieflex.controller;
 
 import de.enricoprojects.movieflex.dto.MovieAllInformationDTO;
+import de.enricoprojects.movieflex.dto.MovieCreateRequestDTO;
 import de.enricoprojects.movieflex.dto.MovieSummaryDTO;
 import de.enricoprojects.movieflex.exception.MovieNotFoundException;
 import de.enricoprojects.movieflex.service.MovieService;
@@ -43,6 +44,15 @@ public class MovieController {
 
         return ResponseEntity.ok(movieService.searchMovies(title, genre));
         //TODO extend more filter parameters
+
+    }
+
+    @PostMapping("/movies")
+    public ResponseEntity<MovieSummaryDTO> createMovie(@RequestBody MovieCreateRequestDTO movieCreateRequestDTO) throws MovieNotFoundException {
+
+       return ResponseEntity.ok(movieService.createMovie(movieCreateRequestDTO));
+
+
 
     }
 

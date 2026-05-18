@@ -7,6 +7,7 @@ import de.enricoprojects.movieflex.repository.UserRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,20 +24,16 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws InvalidCredentialsException {
+    public UserDetails loadUserByUsername(String username) {
 
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        Optional<User> user = Optional.ofNullable(userRepository.findByUsername(username).orElseThrow(InvalidCredentialsException::new));
-
-
-        return new org.springframework.security.core.userdetails.User(
-
-                user.get().getUsername(),
-                user.get().getPassword(),
-                List.of(new SimpleGrantedAuthority(user.get().getRole()))
-
-
-        );
+        return org.springframework.security.core.userdetails.User
+                .withUsername(user.getUsername())
+                .password(user.getPassword())
+                .roles(user.getRole())
+                .build();
     }
 
     public UserSummaryDTO getUserSummaryDTO(String username) {

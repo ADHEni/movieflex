@@ -111,6 +111,24 @@ public class GlobalExceptionHandler {
 
     }
 
+    @ExceptionHandler(MovieAlreadyExistsException.class)
+    public ResponseEntity<ApiErrorDTO> handleMovieAlreadyExistsException(MovieAlreadyExistsException ex) {
+
+        ApiErrorDTO error = new ApiErrorDTO(
+
+                400,
+                "MOVIE_ALREADY_EXISTS",
+                ex.getMessage(),
+                LocalDateTime.now()
+
+
+        );
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+
+
+    }
+
 
 
 }
