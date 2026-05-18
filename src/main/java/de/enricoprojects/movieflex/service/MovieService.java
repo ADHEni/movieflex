@@ -1,9 +1,6 @@
 package de.enricoprojects.movieflex.service;
 
-import de.enricoprojects.movieflex.dto.ActorCreateRequestDTO;
-import de.enricoprojects.movieflex.dto.MovieAllInformationDTO;
-import de.enricoprojects.movieflex.dto.MovieCreateRequestDTO;
-import de.enricoprojects.movieflex.dto.MovieSummaryDTO;
+import de.enricoprojects.movieflex.dto.*;
 import de.enricoprojects.movieflex.entity.Actor;
 import de.enricoprojects.movieflex.entity.Genre;
 import de.enricoprojects.movieflex.entity.Movie;
@@ -11,11 +8,12 @@ import de.enricoprojects.movieflex.exception.MovieAlreadyExistsException;
 import de.enricoprojects.movieflex.exception.MovieNotFoundException;
 import de.enricoprojects.movieflex.repository.ActorRepository;
 import de.enricoprojects.movieflex.repository.GenreRepository;
+import de.enricoprojects.movieflex.repository.MovieRatingRepository;
 import de.enricoprojects.movieflex.repository.MovieRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -29,10 +27,13 @@ public class MovieService {
     private final ActorRepository actorRepository;
     private final GenreRepository genreRepository;
 
-    public MovieService(MovieRepository movieRepository, ActorRepository actorRepository, GenreRepository genreRepository) {
+    private final MovieRatingRepository movieRatingRepository;
+
+    public MovieService(MovieRepository movieRepository, ActorRepository actorRepository, GenreRepository genreRepository, MovieRatingRepository movieRatingRepository) {
         this.movieRepository = movieRepository;
         this.actorRepository = actorRepository;
         this.genreRepository = genreRepository;
+        this.movieRatingRepository = movieRatingRepository;
     }
 
 
@@ -48,11 +49,10 @@ public class MovieService {
 
     public MovieAllInformationDTO getMovieByName(String title) throws MovieNotFoundException {
 
-        return movieRepository.findByTitle(title)
-                .map(MovieAllInformationDTO::fromMovie)
+        Movie movie = movieRepository.findByTitle(title)
                 .orElseThrow(() -> new MovieNotFoundException(title));
 
-
+        return toMovieAllInformationDTO(movie);
     }
 
     public List<MovieSummaryDTO> searchMovies(String title, String genre) {
@@ -98,6 +98,27 @@ public class MovieService {
        return  MovieSummaryDTO.from(savedMovie);
     }
 
+    @Transactional
+    public void deleteMovie(Long movieId) throws MovieNotFoundException {
+
+
+        Movie movie = movieRepository.findByMovie_id(movieId)
+                .orElseThrow(() -> new MovieNotFoundException("The movie with id " + movieId + " does not exist"));
+
+        for (Genre genre : new HashSet<>(movie.getGenres())) {
+            genre.getMovies().remove(movie);
+            movie.getGenres().remove(genre);
+        }
+
+        for (Actor actor : new HashSet<>(movie.getActors())) {
+            actor.getMovies().remove(movie);
+            movie.getActors().remove(actor);
+        }
+
+        movieRepository.delete(movie);
+
+    }
+
 
 
     private static String normalize(String value) {
@@ -134,6 +155,20 @@ public class MovieService {
         });
 
 
+    }
+
+    private MovieAllInformationDTO toMovieAllInformationDTO(Movie movie) {
+
+        Long movieId = movie.getMovie_id();
+
+        Double ratingAverage = movieRatingRepository.findAverageRatingByMovieMovie_id(movieId);
+        Long ratingCount = movieRatingRepository.countRatingByMovieMovie_id(movieId);
+
+        if (ratingAverage == null) {
+            ratingAverage = 0.0;
+        }
+
+        return MovieAllInformationDTO.from(movie, ratingAverage, ratingCount);
     }
 
 

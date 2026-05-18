@@ -1,11 +1,13 @@
 package de.enricoprojects.movieflex.controller;
 
-import de.enricoprojects.movieflex.dto.MovieAllInformationDTO;
-import de.enricoprojects.movieflex.dto.MovieCreateRequestDTO;
-import de.enricoprojects.movieflex.dto.MovieSummaryDTO;
+import de.enricoprojects.movieflex.dto.*;
 import de.enricoprojects.movieflex.exception.MovieNotFoundException;
+import de.enricoprojects.movieflex.service.MovieRatingService;
 import de.enricoprojects.movieflex.service.MovieService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,11 +18,13 @@ import java.util.List;
 public class MovieController {
 
     MovieService movieService;
+    MovieRatingService movieRatingService;
 
 
-    public MovieController(MovieService movieService) {
+    public MovieController(MovieService movieService, MovieRatingService movieRatingService) {
 
         this.movieService = movieService;
+        this.movieRatingService = movieRatingService;
 
 
     }
@@ -41,9 +45,8 @@ public class MovieController {
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String genre) {
 
-
         return ResponseEntity.ok(movieService.searchMovies(title, genre));
-        //TODO extend more filter parameters
+
 
     }
 
@@ -52,10 +55,36 @@ public class MovieController {
 
        return ResponseEntity.ok(movieService.createMovie(movieCreateRequestDTO));
 
+    }
+
+    @DeleteMapping("/movies/{id}")
+    public ResponseEntity<Void> deleteMovie(@PathVariable Long movieId) throws MovieNotFoundException {
+
+        movieService.deleteMovie(movieId);
+
+        return  ResponseEntity.noContent().build();
+
 
 
     }
 
+    @PutMapping("/movies/{movieId}/rating")
+    public ResponseEntity<MovieRatingResponseDTO> rateMovie(
+            @PathVariable Long movieId,
+            @Valid @RequestBody MovieRatingRequestDTO movieRatingRequestDTO,
+            @AuthenticationPrincipal UserDetails userDetails)
+    {
+
+        MovieRatingResponseDTO response = movieRatingService.rateMovie(
+
+                movieId,
+                movieRatingRequestDTO,
+                userDetails.getUsername()
+
+        );
+
+        return ResponseEntity.ok(response);
 
 
+    }
 }

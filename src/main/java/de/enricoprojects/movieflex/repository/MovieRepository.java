@@ -17,6 +17,8 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
 
     List<Movie> findByGenres(Set<Genre> genres);
 
+    Optional<Movie> findByMovie_id(Long movieId);
+
 
 
     @Query("""

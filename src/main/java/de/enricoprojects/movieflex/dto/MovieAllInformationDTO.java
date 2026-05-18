@@ -10,57 +10,85 @@ import java.util.stream.Collectors;
 @Data
 public class MovieAllInformationDTO {
 
-
+    private Long movie_id;
     private String title;
-
-    private String image_url;
-
-    private String releaseYear;
-
     private String description;
-
+    private String image_url;
     private int duration;
+    private String releaseYear;
+    private Set<String> genres;
+    private Set<String> actors;
 
-    private float rating;
+    private Double ratingAverage;
+    private Long ratingCount;
 
-    private Set<String> actorList;
-
-    private Set<String> genreList;
-
-    public MovieAllInformationDTO(String title, String image_url, String releaseYear,String description, int duration, float rating, Set<String> actorList, Set<String> genreList) {
+    public MovieAllInformationDTO(
+            Long movie_id,
+            String title,
+            String description,
+            String image_url,
+            int duration,
+            String releaseYear,
+            Set<String> genres,
+            Set<String> actors,
+            Double ratingAverage,
+            Long ratingCount
+    ) {
+        this.movie_id = movie_id;
         this.title = title;
-        this.image_url = image_url;
-        this.releaseYear = releaseYear;
         this.description = description;
+        this.image_url = image_url;
         this.duration = duration;
-        this.rating = rating;
-        this.actorList = actorList;
-        this.genreList = genreList;
+        this.releaseYear = releaseYear;
+        this.genres = genres;
+        this.actors = actors;
+        this.ratingAverage = ratingAverage;
+        this.ratingCount = ratingCount;
     }
 
-    public static MovieAllInformationDTO fromMovie(Movie movie) {
-
+    public static MovieAllInformationDTO from(Movie movie) {
         return new MovieAllInformationDTO(
-
+                movie.getMovie_id(),
                 movie.getTitle(),
-                movie.getImage_url(),
-                movie.getReleaseYear(),
                 movie.getDescription(),
+                movie.getImage_url(),
                 movie.getDuration(),
-                movie.getRating(),
+                movie.getReleaseYear(),
+                movie.getGenres()
+                        .stream()
+                        .map(Genre::getName)
+                        .collect(Collectors.toSet()),
                 movie.getActors()
                         .stream()
                         .map(actor -> actor.getFirstName() + " " + actor.getLastName())
                         .collect(Collectors.toSet()),
+                0.0,
+                0L
+        );
+    }
+
+    public static MovieAllInformationDTO from(
+            Movie movie,
+            Double ratingAverage,
+            Long ratingCount
+    ) {
+        return new MovieAllInformationDTO(
+                movie.getMovie_id(),
+                movie.getTitle(),
+                movie.getDescription(),
+                movie.getImage_url(),
+                movie.getDuration(),
+                movie.getReleaseYear(),
                 movie.getGenres()
                         .stream()
                         .map(Genre::getName)
-                        .collect(Collectors.toSet())
-
+                        .collect(Collectors.toSet()),
+                movie.getActors()
+                        .stream()
+                        .map(actor -> actor.getFirstName() + " " + actor.getLastName())
+                        .collect(Collectors.toSet()),
+                ratingAverage,
+                ratingCount
         );
-
-
     }
-
-
 }

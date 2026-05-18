@@ -35,9 +35,6 @@ public class Movie {
     @Column(name = "release_year")
     private String releaseYear;
 
-    @Column(name = "rating")
-    private float rating;
-
     @ManyToMany
     @JoinTable(name = "movie_genre", joinColumns = @JoinColumn(name = "movie_id"),
             inverseJoinColumns = @JoinColumn (name = "genre_id")
