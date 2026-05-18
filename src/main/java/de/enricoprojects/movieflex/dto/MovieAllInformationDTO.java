@@ -48,7 +48,7 @@ public class MovieAllInformationDTO {
 
     public static MovieAllInformationDTO from(Movie movie) {
         return new MovieAllInformationDTO(
-                movie.getMovie_id(),
+                movie.getMovieId(),
                 movie.getTitle(),
                 movie.getDescription(),
                 movie.getImage_url(),
@@ -73,7 +73,7 @@ public class MovieAllInformationDTO {
             Long ratingCount
     ) {
         return new MovieAllInformationDTO(
-                movie.getMovie_id(),
+                movie.getMovieId(),
                 movie.getTitle(),
                 movie.getDescription(),
                 movie.getImage_url(),

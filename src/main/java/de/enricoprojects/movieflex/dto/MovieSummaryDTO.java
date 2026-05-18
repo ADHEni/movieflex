@@ -30,7 +30,7 @@ public class MovieSummaryDTO {
     public static MovieSummaryDTO from(Movie movie) {
 
         return new MovieSummaryDTO(
-                movie.getMovie_id(),
+                movie.getMovieId(),
                 movie.getTitle(),
                 movie.getImage_url(),
                 movie.getReleaseYear(),
@@ -46,7 +46,7 @@ public class MovieSummaryDTO {
             Long ratingCount
     ) {
         return new MovieSummaryDTO(
-                movie.getMovie_id(),
+                movie.getMovieId(),
                 movie.getTitle(),
                 movie.getImage_url(),
                 movie.getReleaseYear(),

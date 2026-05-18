@@ -102,7 +102,7 @@ public class MovieService {
     public void deleteMovie(Long movieId) throws MovieNotFoundException {
 
 
-        Movie movie = movieRepository.findByMovie_id(movieId)
+        Movie movie = movieRepository.findByMovieId(movieId)
                 .orElseThrow(() -> new MovieNotFoundException("The movie with id " + movieId + " does not exist"));
 
         for (Genre genre : new HashSet<>(movie.getGenres())) {
@@ -159,7 +159,7 @@ public class MovieService {
 
     private MovieAllInformationDTO toMovieAllInformationDTO(Movie movie) {
 
-        Long movieId = movie.getMovie_id();
+        Long movieId = movie.getMovieId();
 
         Double ratingAverage = movieRatingRepository.findAverageRatingByMovieMovie_id(movieId);
         Long ratingCount = movieRatingRepository.countRatingByMovieMovie_id(movieId);

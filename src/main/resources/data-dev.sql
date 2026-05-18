@@ -9,7 +9,7 @@ INSERT INTO actors (first_name, last_name) VALUES
 ('Leonardo' , 'DiCaprio'),
 ('Song', 'Kang-ho');
 
-INSERT INTO movies (title, description, image_url, duration, release_year, rating) VALUES
+INSERT INTO movies (title, description, image_url, duration, release_year) VALUES
 ('The Matrix', 'A hacker discovers reality is a simulation.', '/images/matrix.jpg', 136, '1999'),
 ('Inception', 'A thief enters dreams to steal secrets.', '/images/inception.jpg', 148, '2010'),
 ('Parasite', 'A poor family infiltrates a wealthy household.', '/images/parasite.jpg', 132, '2019');

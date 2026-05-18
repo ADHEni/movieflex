@@ -15,10 +15,10 @@ public interface MovieRatingRepository extends JpaRepository<MovieRating, Long> 
 
     Optional<MovieRating> findByUserAndMovie(User user, Movie movie);
 
-    @Query(" SELECT avg(r.ratingValue) FROM MovieRating r WHERE r.movie.movie_id= :movieId")
+    @Query(" SELECT avg(r.ratingValue) FROM MovieRating r WHERE r.movie.movieId = :movieId")
     Double findAverageRatingByMovieMovie_id(@Param("movieId") Long movieId);
 
-    @Query("SELECT count(r) FROM MovieRating r WHERE r.movie.movie_id = :movieId")
+    @Query("SELECT count(r) FROM MovieRating r WHERE r.movie.movieId = :movieId")
     Long countRatingByMovieMovie_id(@Param("movieId") Long movieId);
 
 }
