@@ -462,7 +462,7 @@ src/main/java/de/enricoprojects/movieflex
 erDiagram
     USER ||--o{ REFRESH_TOKEN : owns
     USER ||--o{ MOVIE_RATING : creates
-    MOVIES ||-So{ MOVIE_RATING : receives
+    MOVIES ||--o{ MOVIE_RATING : receives
 
     MOVIES }o--o{ GENRE : has
     MOVIES }o--o{ ACTOR : features
