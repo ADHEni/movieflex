@@ -1,37 +1,28 @@
 package de.enricoprojects.movieflex.api;
 
 import de.enricoprojects.movieflex.dto.ActorCreateRequestDTO;
-import de.enricoprojects.movieflex.dto.LoginRequestDTO;
 import de.enricoprojects.movieflex.dto.MovieCreateRequestDTO;
-import de.enricoprojects.movieflex.entity.Genre;
+import de.enricoprojects.movieflex.dto.MovieDeleteRequestDTO;
 import de.enricoprojects.movieflex.entity.Movie;
 import de.enricoprojects.movieflex.entity.User;
 import de.enricoprojects.movieflex.repository.GenreRepository;
 import de.enricoprojects.movieflex.repository.MovieRepository;
-import de.enricoprojects.movieflex.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 import tools.jackson.databind.ObjectMapper;
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-import java.util.List;
-import java.util.Scanner;
 import java.util.Set;
-import java.util.UUID;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -40,15 +31,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("dev")
-public class MoviesApiIntegrationTest {
+public class MoviesApiIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private UserRepository userRepository;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -139,25 +125,9 @@ public class MoviesApiIntegrationTest {
     void adminCanCreateMovieTestAndValidateExistence()  throws Exception {
 
         //creation of an admin user
-        User admin = new User();
-        admin.setUsername("admin" + UUID.randomUUID().toString().substring(0, 5));
-        admin.setPassword(passwordEncoder.encode("admin"));
-        admin.setRole("ADMIN");
-        userRepository.save(admin);
+        User admin = createRandomAdmin();
 
-        //login of the admin user
-
-        LoginRequestDTO loginRequestDTO = new LoginRequestDTO(admin.getUsername(), "admin");
-        MvcResult loginResult = mockMvc.perform(post("/api/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(loginRequestDTO)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.accessToken").exists())
-                .andReturn();
-
-
-        String loginResponseBody = loginResult.getResponse().getContentAsString();
-        String accessToken = objectMapper.readTree(loginResponseBody).get("accessToken").asText();
+        String accessToken = loginAndGetAccessToken(admin.getUsername(), "admin");
 
         //create a new Movie as an Admin
 
@@ -195,6 +165,59 @@ public class MoviesApiIntegrationTest {
 
         assertThat(savedMovie.getGenres()).hasSize(3);
         assertThat(savedMovie.getActors()).hasSize(2);
+
+    }
+
+    @Test
+    public void normalUserCantCreateMovie() throws Exception {
+
+        User user = createRandomUser("USER");
+
+        String accessToken = loginAndGetAccessToken(user.getUsername(), "password");
+
+        MovieCreateRequestDTO movieCreateRequestDTO =
+                new MovieCreateRequestDTO(
+                        "Interstellar",
+                        "A sci-fi movie about space, time and survival.",
+                        "/images/interstellar.jpg",
+                        169,
+                        "2014",
+                        Set.of("Sci-Fi", "Drama", "Adventure"),
+                        Set.of(
+                                new ActorCreateRequestDTO("Matthew", "McConaughey"),
+                                new ActorCreateRequestDTO("Anne", "Hathaway")
+                        )
+                );
+
+        mockMvc.perform(post("/api/movies")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(movieCreateRequestDTO)))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+
+    }
+
+    @Test
+    public void adminCanDeleteMovie() throws Exception {
+        User admin = createRandomAdmin();
+
+        String accessToken = loginAndGetAccessToken(admin.getUsername(), "admin");
+
+        MovieDeleteRequestDTO movieDeleteRequestDTO = new MovieDeleteRequestDTO(1L);
+
+        mockMvc.perform(delete("/api/movies/{movieId}",movieDeleteRequestDTO.movieId())
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(movieDeleteRequestDTO)))
+                .andDo(print())
+                .andExpect(status().isNoContent());
+
+
+        mockMvc.perform(get("/api/movies/{movieName}", "The Matrix"))
+                .andDo(print())
+                .andExpect(jsonPath("$.code").value("MOVIE_NOT_FOUND"));
+
 
     }
 

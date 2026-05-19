@@ -57,7 +57,7 @@ public class MovieController {
 
     }
 
-    @DeleteMapping("/movies/{id}")
+    @DeleteMapping("/movies/{movieId}")
     public ResponseEntity<Void> deleteMovie(@PathVariable Long movieId) throws MovieNotFoundException {
 
         movieService.deleteMovie(movieId);

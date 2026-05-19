@@ -2,8 +2,8 @@ package de.enricoprojects.movieflex.api;
 
 import de.enricoprojects.movieflex.dto.LoginRequestDTO;
 import de.enricoprojects.movieflex.dto.RegisterRequestDTO;
+import de.enricoprojects.movieflex.entity.User;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest()
 @AutoConfigureMockMvc
 @ActiveProfiles("dev")
-public class UserApiIntegrationTest {
+public class UserApiIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -54,19 +54,10 @@ public class UserApiIntegrationTest {
     }
 
     @Test
-    public void registerAndLoginTest() throws Exception {
+    public void loginTest() throws Exception {
+        User user =  createRandomUser("ROLE");
 
-
-        RegisterRequestDTO registerRequestDTO = new RegisterRequestDTO("testUser", "testPassword", "testEmail");
-
-        mockMvc.perform(post("/api/auth/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(registerRequestDTO)))
-                .andDo(print())
-                .andExpect(status().isOk());
-
-        LoginRequestDTO loginRequestDTO = new LoginRequestDTO("testUser", "testPassword");
+        LoginRequestDTO loginRequestDTO = new LoginRequestDTO(user.getUsername(), "password");
 
         mockMvc.perform(post("/api/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -124,6 +115,33 @@ public class UserApiIntegrationTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username").value(username));
+    }
+
+    @Test
+    public void loginWithWrongPasswordTest() throws Exception {
+        String username = "testUser_" + UUID.randomUUID().toString().substring(0, 8);
+
+        LoginRequestDTO loginRequestDTO = new LoginRequestDTO(username, "wrongPassword");
+
+        mockMvc.perform(post("/api/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(loginRequestDTO)))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+
+    }
+
+    @Test
+    public void registerWithAUsernameThatAlreadyExistsTest() throws Exception {
+        User user =  createRandomUser("ROLE");
+
+        RegisterRequestDTO registerRequestDTO = new RegisterRequestDTO(user.getUsername(), "password", "email");
+        mockMvc.perform(post("/api/auth/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(registerRequestDTO)))
+                .andDo(print())
+                .andExpect(jsonPath("$.code").value("USERNAME_ALREADY_EXISTS"));
+
     }
 
 
