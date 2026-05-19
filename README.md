@@ -473,9 +473,11 @@ erDiagram
         string email
         string password
         string role
+        dateTime created_at
+        dateTime updated_at
     }
 
-    MOVIE {
+    MOVIES {
         long movie_id
         string title
         string description
@@ -505,8 +507,8 @@ erDiagram
 
     ACTOR {
         long actor_id
-        string firstName
-        string lastName
+        string first_name
+        string last_name
     }
 ```
 
