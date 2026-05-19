@@ -5,6 +5,7 @@ import de.enricoprojects.movieflex.dto.MovieCreateRequestDTO;
 import de.enricoprojects.movieflex.dto.MovieDeleteRequestDTO;
 import de.enricoprojects.movieflex.entity.Movie;
 import de.enricoprojects.movieflex.entity.User;
+import de.enricoprojects.movieflex.exception.MovieNotFoundException;
 import de.enricoprojects.movieflex.repository.GenreRepository;
 import de.enricoprojects.movieflex.repository.MovieRepository;
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
 import tools.jackson.databind.ObjectMapper;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -204,7 +204,30 @@ public class MoviesApiIntegrationTest extends AbstractIntegrationTest {
 
         String accessToken = loginAndGetAccessToken(admin.getUsername(), "admin");
 
-        MovieDeleteRequestDTO movieDeleteRequestDTO = new MovieDeleteRequestDTO(1L);
+        MovieCreateRequestDTO movieCreateRequestDTO =
+                new MovieCreateRequestDTO(
+                        "Ironman",
+                        "A action movie about Tony Stark",
+                        "/images/ironman.jpg",
+                        999,
+                        "2013",
+                        Set.of("Drama", "Action"),
+                        Set.of(
+                                new ActorCreateRequestDTO("Robert", "Downey Jr.")
+                        )
+                );
+
+        mockMvc.perform(post("/api/movies")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(movieCreateRequestDTO)))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        Movie savedMovie = movieRepository.findByTitle("Ironman").orElseThrow(() -> new MovieNotFoundException("Ironman not found"));
+        Long movieId = savedMovie.getMovieId();
+
+        MovieDeleteRequestDTO movieDeleteRequestDTO = new MovieDeleteRequestDTO(movieId);
 
         mockMvc.perform(delete("/api/movies/{movieId}",movieDeleteRequestDTO.movieId())
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
@@ -214,7 +237,7 @@ public class MoviesApiIntegrationTest extends AbstractIntegrationTest {
                 .andExpect(status().isNoContent());
 
 
-        mockMvc.perform(get("/api/movies/{movieName}", "The Matrix"))
+        mockMvc.perform(get("/api/movies/{movieName}", "Ironman"))
                 .andDo(print())
                 .andExpect(jsonPath("$.code").value("MOVIE_NOT_FOUND"));
 

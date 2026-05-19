@@ -14,6 +14,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
 
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -68,9 +70,9 @@ public class RatingApiIntegrationTest extends AbstractIntegrationTest {
     @Transactional
     public void loginUserAndRateAMovieAndChangeTheRating() throws Exception {
 
-        User user = createUser("testUser","testPassword","USER");
+        User user = createUser("testUser"+ UUID.randomUUID(),"testPassword","USER");
 
-        String accessToken = loginAndGetAccessToken("testUser", "testPassword");
+        String accessToken = loginAndGetAccessToken(user.getUsername(), "testPassword");
 
         MovieRatingRequestDTO ratingRequestDTO = new MovieRatingRequestDTO(8);
 
@@ -112,17 +114,17 @@ public class RatingApiIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     public void averageRatingWithTwoUsers() throws Exception {
-        User user = createUser("testUser","testPassword","USER");
+        User user = createUser("testUser"+ UUID.randomUUID(),"testPassword","USER");
         User user2 = createUser("testUser2","testPassword2","USER");
 
-        String accessToken = loginAndGetAccessToken("testUser", "testPassword");
+        String accessToken = loginAndGetAccessToken(user.getUsername(), "testPassword");
         String accessToken2 = loginAndGetAccessToken("testUser2", "testPassword2");
 
         MovieRatingRequestDTO ratingRequestDTO = new MovieRatingRequestDTO(8);
         MovieRatingRequestDTO ratingRequestDTO2 = new MovieRatingRequestDTO(4);
 
 
-        mockMvc.perform(put("/api/movies/{movieId}/rating", 1)
+        mockMvc.perform(put("/api/movies/{movieId}/rating", 2)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -131,7 +133,7 @@ public class RatingApiIntegrationTest extends AbstractIntegrationTest {
                 .andExpect(status().isOk());
 
 
-        mockMvc.perform(put("/api/movies/{movieId}/rating", 1)
+        mockMvc.perform(put("/api/movies/{movieId}/rating", 2)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken2)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -139,8 +141,8 @@ public class RatingApiIntegrationTest extends AbstractIntegrationTest {
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        Double newAverage = movieRatingRepository.findAverageRatingByMovieMovie_id(1L);
-        Long newCount = movieRatingRepository.countRatingByMovieMovie_id(1L);
+        Double newAverage = movieRatingRepository.findAverageRatingByMovieMovie_id(2L);
+        Long newCount = movieRatingRepository.countRatingByMovieMovie_id(2L);
 
         assertThat(newAverage).isEqualTo(6.0);
         assertThat(newCount).isEqualTo(2L);

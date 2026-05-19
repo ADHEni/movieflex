@@ -38,7 +38,7 @@ public class UserApiIntegrationTest extends AbstractIntegrationTest {
     @Test
     public void registerUserTest() throws Exception {
 
-        RegisterRequestDTO registerRequestDTO = new RegisterRequestDTO("testUser", "testPassword", "testEmail");
+        RegisterRequestDTO registerRequestDTO = new RegisterRequestDTO("testUser"+UUID.randomUUID(), "testPassword", "testEmail");
 
         mockMvc.perform(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -46,7 +46,7 @@ public class UserApiIntegrationTest extends AbstractIntegrationTest {
                         .content(objectMapper.writeValueAsString(registerRequestDTO)))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.username").value("testUser"))
+                .andExpect(jsonPath("$.username").value(registerRequestDTO.username()))
                 .andExpect(jsonPath("$.email").value("testEmail"));
 
 

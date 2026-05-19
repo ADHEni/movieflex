@@ -79,6 +79,11 @@ public class SecurityConfig {
                        .requestMatchers("/error").permitAll()
                        //DataBase
                        .requestMatchers("/h2-console/**").permitAll()
+                       .requestMatchers(
+                               "/swagger-ui.html",
+                               "/swagger-ui/**",
+                               "/v3/api-docs/**"
+                       ).permitAll()
                        //Public Movie GET endpoints
                        .requestMatchers(HttpMethod.GET,"/api/movies").permitAll()
                        .requestMatchers(HttpMethod.GET,"/api/movies/**").permitAll()
