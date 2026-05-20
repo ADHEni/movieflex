@@ -61,13 +61,26 @@ public class MovieService {
         genre = MovieService.normalize(genre);
 
 
-        return movieRepository.findBySearchParameters(title, genre)
-                .stream()
+        List<Movie> movies;
+
+        if (title != null && genre != null) {
+            movies = movieRepository
+                    .findDistinctByTitleContainingIgnoreCaseAndGenres_NameIgnoreCase(title, genre);
+        } else if (title != null) {
+            movies = movieRepository
+                    .findDistinctByTitleContainingIgnoreCase(title);
+        } else if (genre != null) {
+            movies = movieRepository
+                    .findDistinctByGenres_NameIgnoreCase(genre);
+        } else {
+            movies = movieRepository.findAll();
+        }
+
+        return movies.stream()
                 .map(MovieSummaryDTO::from)
                 .toList();
-
-
     }
+
 
 
     @Transactional

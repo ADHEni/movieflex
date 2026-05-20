@@ -462,10 +462,10 @@ src/main/java/de/enricoprojects/movieflex
 erDiagram
     USER ||--o{ REFRESH_TOKEN : owns
     USER ||--o{ MOVIE_RATING : creates
-    MOVIE ||--o{ MOVIE_RATING : receives
+    MOVIES ||--o{ MOVIE_RATING : receives
 
-    MOVIE }o--o{ GENRE : has
-    MOVIE }o--o{ ACTOR : features
+    MOVIES }o--o{ GENRE : has
+    MOVIES }o--o{ ACTOR : features
 
     USER {
         long user_id
@@ -473,9 +473,11 @@ erDiagram
         string email
         string password
         string role
+        dateTime created_at
+        dateTime updated_at
     }
 
-    MOVIE {
+    MOVIES {
         long movie_id
         string title
         string description
@@ -505,8 +507,8 @@ erDiagram
 
     ACTOR {
         long actor_id
-        string firstName
-        string lastName
+        string first_name
+        string last_name
     }
 ```
 

@@ -21,15 +21,15 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
 
 
 
-    @Query("""
-            SELECT DISTINCT m
-            FROM Movie m LEFT JOIN m.genres g
-            WHERE (:title IS NULL OR LOWER(m.title) LIKE LOWER(CONCAT('%',:title,'%')))
-            AND (:genre IS NULL OR LOWER (g.name) = LOWER(:genre))
-            """)
-    List<Movie> findBySearchParameters(
-            @Param("title") String title,
-            @Param("genre") String genre
+    boolean existsByTitleIgnoreCase(String title);
+
+    List<Movie> findDistinctByTitleContainingIgnoreCase(String title);
+
+    List<Movie> findDistinctByGenres_NameIgnoreCase(String genre);
+
+    List<Movie> findDistinctByTitleContainingIgnoreCaseAndGenres_NameIgnoreCase(
+            String title,
+            String genre
     );
 
 
